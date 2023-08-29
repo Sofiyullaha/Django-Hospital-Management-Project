@@ -41,3 +41,23 @@ class BooksService_form(forms.ModelForm):
             "description": forms.Textarea(attrs={'cols':60, 'row': 3}),
         }
         
+        
+class AcceptBooksService_form(forms.ModelForm):
+
+    class Meta:
+        model = BookingService
+        fields = [
+            'description',
+            'approved_date',
+            'approved_time',
+            'doctor_remark',
+        ]
+        
+        widgets = {
+           
+           "approved_date": forms.NumberInput(attrs={'type': 'date'}),
+           "approved_time": forms.NumberInput(attrs={'type': 'time'}),
+            "description": forms.Textarea(attrs={'cols':60, 'row': 3}),
+            "doctor_remark": forms.Textarea(attrs={'cols':60, 'row': 3}),
+        }
+        

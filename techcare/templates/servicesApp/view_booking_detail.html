@@ -1,0 +1,199 @@
+{% extends 'common_page.html' %}
+{% block title %} BOOKING DETAILS {% endblock title %}
+
+{% block body_content %}
+
+<div>
+    <div class="row">
+        <div class="col-3"></div>
+        <div class="col-md-6 col-12 col-offset-3">
+            <p><span class="date text-pink text-size-30px mt-5">
+
+                    {% if messages %}
+                        {% for message in messages %}
+                            {{message}}
+                        {% endfor %}
+                    {% endif %}</span>
+            </p>
+            {% if my_booking %}
+        
+                {% for detail in my_booking %}
+                <div class="card">
+                    <header class="card-header">
+                        <p class="card-header-title">
+                            <span class="icon"> <i class="mdi mdi-account"></i></span>
+                            Patient ID: TCH0{{detail.user.id}} <hr>
+                            Date Created: {{ detail.date_created }}
+
+                        </p>
+                    </header>
+
+
+                    <div class="card-content">
+                        {% if profile.profile_passport %}
+                            <div class="image w-30 h-10 mx-auto">
+                                <img src="{{detail.user.profile_passport.url}}" alt="{{detail.user.username}}"
+                                class="rounded-full" height="200" width="200">
+                            </div>
+
+                            {% else %}
+                            <div class="image w-30 h-10 mx-auto">
+                                <img src="https://avatar.dicebar.com/v2/initials/{{profile.user.username}}" alt="{{profile.user.username}}" class="rounded-full">
+                            </div>
+                        {% endif %}
+                        <hr>
+                        <div class="field">
+                            <label class="label">Name</label>
+                            <div class="control">
+                                {{detail.user.first_name}} {{detail.user.last_name}}
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="field">
+                            <label class="label">E-mail</label>
+                            <div class="control">
+                                 {{detail.user.email}}
+                             </div>
+                        </div>
+                        <hr>
+                        <div class="field">
+                            <label class="label">Phone</label>
+                            <div class="control">
+                                 {{detail.profile.phone}}
+                             </div>
+                        </div>
+                        <hr>
+                        <div class="field">
+                            <label class="label">Service</label>
+                            <div class="control">
+                                 {{detail.service_name}}
+                             </div>
+                        </div>
+                        <hr>
+                        <div class="field">
+                            <label class="label">Description</label>
+                            <div class="control">
+                                 {{ detail.description }}
+                             </div>
+                        </div>
+                        <hr>
+                        <div class="field">
+                            <label class="label">Payment</label>
+                            <div class="control">
+                                 {% if detail.payment == 1 %}
+                                 
+                                 Paid
+
+                                 {% else %}
+
+                                 Pending
+
+                                 {% endif %}
+                             </div>
+                        </div>
+                        <hr>
+                        <div class="field">
+                            <label class="label">Assigned Doctor</label>
+                            <div class="control">
+                                
+                                {% if detail.resident_doctor_id == 1 and detail.consultant_doctor_id == 1 %}
+                                None
+                                {% elif detail.resident_doctor_id != 1 %} 
+                                Dr. {{ detail.resident_doctor.first_name }} {{ detail.resident_doctor.last_name }}
+
+                                {% elif detail.consultant_doctor_id != 1 %}
+
+                                Dr. {{ detail.consultant_doctor.first_name}}  {{ detail.consultant_doctor.last_name }}
+
+                                {% endif %}
+
+                             </div>
+                        </div>
+                        <hr>
+                        <div class="field">
+                            <label class="label">Approved date and time</label>
+                            <div class="control">
+                                 Date: {{detail.approved_date}} Time: {{detail.approved_time}}
+                             </div>
+                        </div>
+                        <hr>
+                        <div class="field">
+                            <label class="label">Served</label>
+                            <div class="control">
+                                 {{detail.served}}
+                             </div>
+                        </div>
+                        <hr>
+                        <div class="field">
+                            <label class="label">Patient Status</label>
+                            <div class="control">
+                                 {{detail.patient_status}}
+                             </div>
+                        </div>
+                        <hr>
+                        <div class="field">
+                            <label class="label">Doctor's Remark</label>
+                            <div class="control">
+                                 {{detail.doctor_remark}}
+                             </div>
+                        </div>
+                        <hr>
+                      
+        
+                        {% if request.user.is_superuser  or request.user.is_staff  %}
+                        {% if detail.payment == 1 %}
+                        <div class="field d-flex mx-2 g-2">
+                            <div class="control">
+
+                               <a href="{% url 'edit_booking' detail.booking_id %}">
+
+                                <button type="submit" class="button green">
+                                    Refer
+                                </button>
+                               </a>
+                               <a href="{% url 'accept_booking' detail.booking_id %}">
+
+                                <button type="submit" class="button green">
+                                    Accept
+                                </button>
+                               </a>
+                               <a href="{% url 'decline_booking' detail.booking_id %}">
+
+                                <button type="submit" class="button green">
+                                    Decline
+                                </button>
+                               </a>
+
+                                
+                             </div>
+                        </div>
+                      
+                        {% endif %}
+                        {% else %}
+                        <a href="{% url 'book_payment' detail.booking_id %}">
+                            <span style="color: #0e399c;" class="font-weight-bold">
+                                <button type="submit" class="button green">
+                                    Make Payment
+                                </button>
+                        </span>
+                    </a>
+                    {% endif %}
+                    
+                    </div>
+                 </div>
+                 </div>
+                         </div>
+            
+        
+                   {% endfor %}
+                   {% endif %}
+                         
+                
+                    </div>
+                </div>
+         <div class="col-3"></div>
+        
+    </div>
+</div>
+
+{% endblock body_content %}
