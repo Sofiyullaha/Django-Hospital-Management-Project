@@ -78,7 +78,7 @@ def serviceDetail(request, serv_id):
             form = service_form.save(commit=False)
             form.hod_id = service.HoD_id
             form.user_id = request.user.id
-            form.service_id = service.service_id
+            form.service_id = service
             form.price = service.price
             form.service_name = service.service_option
             form.save()
@@ -151,7 +151,7 @@ def acceptBooking(request, book_id):
            
            send_mail(
                'Booking has been made by a patient', #Subject of the mail
-               f'Dear {booking.user.first_name}, your booking appointment has been approved. See your booking details for more information or click on the <a href="http://127.0.0.1:8000/servicesApp/view_booking_detail/{booking.user_id}">booking</a>. Thanks \n http://127.0.0.1:8000/servicesApp/view_booking_detail/{booking.user_id}'  #Body of the mail
+               f'Dear {booking.user.first_name}, your booking appointment has been approved. See your booking details for more information or click on the <a href="http://127.0.0.1:8000/servicesApp/view_booking_detail/{booking.user_id}">booking</a>. Thanks \n http://127.0.0.1:8000/servicesApp/view_booking_detail/{booking.user_id}',  #Body of the mail
                
                'ibsoat@gmail.com', #From email (Sender)
                [patient_email], #To email (Receiver)
