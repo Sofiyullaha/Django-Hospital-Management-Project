@@ -1,9 +1,9 @@
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponsePermanentRedirect, HttpResponseRedirect
-from .forms import Services_form, BooksService_form, AcceptBooksService_form
+from .forms import Services_form, BooksService_form, AcceptBooksService_form, EditBooksService_form, MedicalReportForm
 from django.contrib import messages
-from .models import Service, BookingService
+from .models import Service, BookingService, PatientMedicalHistory
 from django.urls import reverse
 from django.db import transaction
 from django.core.mail import send_mail
@@ -86,7 +86,7 @@ def serviceDetail(request, serv_id):
             # send mail notification to the doctor
             send_mail(
                 'Booking has been made by a patient', #subject of the mail
-                f'Deaer Dr. {service.HoD.first_name}, a patient has booked for a service. Please accept and fix an appointment with the patient. Thanks', #Body of the mail
+                f'Dear Dr. {service.HoD.first_name}, a patient has booked for a service. Please accept and fix an appointment with the patient. Thanks', #Body of the mail
                 'ogunleyekolade@yahoo.com', #From email(Sender)
                 [service.HoD.email], #To email (receiver)
                 fail_silently=False, #Handle any error
@@ -130,12 +130,12 @@ def patientBooking(request, user):
 @login_required
 def viewBookingDetail(request, book_id):
    my_booking = BookingService.objects.filter(booking_id =book_id)
-   return render (request, "servicesApp/view_booking_detail.html", {"my_booking": my_booking})
+   email = my_booking[0].user.email
+   price = my_booking[0].price
+   return render (request, "servicesApp/view_booking_detail.html", {"my_booking": my_booking, "email": email, "phone":my_booking[0].user.profile.phone, "first_name":my_booking[0].user.first_name, "user_id":my_booking[0].user.id, "price": price, "book_id" : my_booking[0].booking_id})
 
 
-@login_required
-def bookingPayment(request, book_id):
-   pass
+
 
 
 @login_required
@@ -186,9 +186,100 @@ def acceptBooking(request, book_id):
 
 @login_required
 def declineBooking(request, book_id):
-   pass
+    if request.method == "POST":
+       booking = get_object_or_404(BookingService, booking_id=book_id)
+       booking_form = AcceptBooksService_form(request.POST, instance=booking)
+       if booking_form.is_valid():
+           booking_form.save()
+           
+           #Send mail notification to the patient
+           
+           #Send a confirmation notification mail to the HOD
+           
+           send_mail(
+               'Your referred patient was declined', #Subject of the mail
+               f'Dear HOD, Dr, {booking.consultant_doctor.first_name}, has declined the patient named {booking.user.first_name} you refer to him/her. See your booking details for more information or click on the <a href="http://127.0.0.1:8000/servicesApp/view_booking_detail/{booking.user_id}">booking</a>. Thanks \n http://127.0.0.1:8000/servicesApp/view_booking_detail/{booking.user_id}', #Body of the mail
+               
+               'ibsoat@gmail.com', #From email (Sender)
+               [booking.hod.email], #To email (Receiver)
+               fail_silently=False, #Handle any error
+           )
+           
+           messages.success(request, ('Booking edited successfully'))
+           return HttpResponsePermanentRedirect(reverse('view_booking_detail', args=(book_id,)))
+        
+       else:
+           messages.success(request, ('Please correct the error below'))
+           return HttpResponsePermanentRedirect(reverse('edit_booking', args=(book_id,)))
+       
+    else:
+        booking = get_object_or_404(BookingService, booking_id=book_id)
+        booking_form = AcceptBooksService_form(instance=booking)
+        return render(request, 'servicesApp/edit_booking_service_form.html', {'booking_form': booking_form})
+         
+    
 
 
 @login_required
-def editBooking(request, book_id):
-   pass
+def referBooking(request, book_id):
+   if request.method == "POST":
+       booking = get_object_or_404(BookingService, booking_id=book_id)
+       booking_form = EditBooksService_form(request.POST, instance=booking)
+       if booking_form.is_valid():
+           booking = booking_form.save(commit=False)
+           if booking_form.cleaned_data["resident"]:
+               email = booking.resident_doctor.email
+               booking.resident_doctor_id = booking_form.cleaned_data["resident"]
+               
+           else:
+               email = booking.resident_doctor.email
+               booking.consultant_doctor_id = booking_form.cleaned_data["consultant"]
+            
+           booking.save()
+            
+            
+            
+               #Send a mail notification mail to the HOD
+           
+           send_mail(
+               'Booking has been made by a patient', #Subject of the mail
+               f'Dear Dr. {booking.user.first_name}, a patient booking has been refered to you. Please accept and fix an appointment with the patient. Thanks.', #Body of the mail
+               'ibsoat@gmail.com', #From email (Sender)
+               [email], #To email (Receiver)
+               fail_silently=False, #Handle any error
+           )
+           
+           messages.success(request, ('Booking edited successfully'))
+           return HttpResponsePermanentRedirect(reverse('view_booking_detail', args=(book_id,)))
+        
+       else:
+           messages.success(request, ('Please correct the error below'))
+           return HttpResponsePermanentRedirect(reverse('edit_booking', args=(book_id,)))
+       
+   else:
+       booking = get_object_or_404(BookingService, booking_id=book_id)
+       booking_form = EditBooksService_form(instance=booking)
+       return render(request, 'servicesApp/edit_booking_service_form.html', {'booking_form': booking_form})
+         
+        
+@login_required
+def medicalHistory(request, user):
+    medical_history = PatientMedicalHistory.objects.filter(user_id=user)
+    return render (request, "servicesApp/medical_history.html", {"medical_history": medical_history, "user_id": user})
+
+
+@login_required
+def medicalReport(request, user):
+    if request.method == "POST":
+       medical_form = MedicalReportForm(request.POST)
+       if medical_form.is_valid():
+          medical_history = medical_form.save(commit=False)
+          medical_history.user_id = user
+          medical_history.approved_doctor_id = request.user.id
+          medical_history.service_id = medical_form.cleaned_data["service_name"]
+          medical_history.save()
+          return medicalHistory(request, user)
+        
+    else:
+        medical_form = MedicalReportForm()
+        return render(request=request, template_name='servicesApp/medical_history_form.html', context={"medicalForm": medical_form})

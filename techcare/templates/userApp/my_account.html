@@ -29,12 +29,30 @@
                             {% endif %}
 
                         </p>
+                      
+                        
                     </header>
-
+                    <div class="d-flex">
                     <div class="field">
                         <p class="card-header-title">
                             <span class="icon"> <i class="mdi mdi-account"></i></span>
-                            {% if profile.staff == 1 %} Staff ID: {% else %} Patient ID: {% endif %} TCH0 {{profile.user_id}} <hr>
+                            {% if profile.staff == 1 %} Staff ID: {% else %} Patient ID: {% endif %} TCH0 {{profile.user_id}} 
+                            <div style="margin-right: 300px;    ">
+                            <a href="{% url 'my_booking' profile.user_id %}">
+                                <span style="color: #0e399c;" class="font-weight-bold"> Booking History
+                                </span>
+                          
+                            </a>
+                      
+                          {% if request.user.is_staff %}
+
+                             <a href="{% url 'medical_history' profile.user_id %}">
+                             <span style="color: #0e399c;" class="font-weight-bold">
+                               Medical History
+                             </span>
+                         </a>
+                         {% endif %}
+                            <hr>
                             Username: {{profile.user.username}}
 
                         </p>
@@ -173,7 +191,7 @@
                                     Edit Account
                                 </button>
                                </a>
-                               {% comment %} <a href="{% url 'deactivate_account' profile.user_id %}"> {% endcomment %}
+                               <a href="{% url 'deactivate_account' profile.user_id %}">
                                 <button type="submit" class="button red">
                                     {% if profile.user.is_active == 1 %}
                                     Deactivate

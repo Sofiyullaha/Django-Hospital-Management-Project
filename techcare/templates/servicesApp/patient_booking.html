@@ -82,13 +82,13 @@
                     </td>
                     <td>
                         <span style="color: #969cad;" class="font-weight-bold">
-                          {{patient.hod}}
+                          None
                         </span>
                     </td>
                     <td>
-                        <a href="{% url 'view_booking_detail' patient.booking_id %}">
+                        <a href="{% url 'my_account' patient.user_id %}">
                         <span style="color: #969cad;" class="font-weight-bold">
-                          Booking Detail
+                          Patient Profile
                         </span>
                     </a>
                     </td>

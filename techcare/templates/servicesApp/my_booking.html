@@ -24,7 +24,7 @@
                                 <thead bgcolor="#969cad">
                                   
                                     <th> BOOKING DATE </th> <th> SERVICE NAME </th> <th> PRICE </th>
-                                   <th> APPROVED DATE </th> <th> APPROVED TIME </th> <th> DESCRIPTION</th> <th> PAYMENT</th>
+                                   <th> APPROVED DATE </th> <th> APPROVED TIME </th> <th> DESCRIPTION</th> <th> PAYMENT</th>  <th> VIEW BOOKING DETAILS</th>
                                 </thead>
                                 {% if booking_service %}
 
@@ -39,7 +39,7 @@
                                     </td>
                                     <td>
                                         <span style="color: #969cad;" class="font-weight-bold">
-                                           {{booking.service_options}}
+                                           {{booking.service_name}}
                                         </span>
                                     </td>
                                     <td>
@@ -65,18 +65,29 @@
                           {{booking.description}}
                         </span>
                     </td>
+                    <td>
+                        
+                            {% if booking.payment == 1 %} Paid 
+                            
+                            {% else %} 
+                                <span style="color: #0e399c;" class="font-weight-bold">
+                                    Pending
+                            </span>
+                              {% endif %}
+                                                        
+                    </td>
                     
                     <td>
-                        {% if booking.payment == 1 %} Paid 
-                        
-                        {% else %} 
+                       
+
                         <a href="{% url 'view_booking_detail' booking.booking_id %}">
                             <span style="color: #0e399c;" class="font-weight-bold">
                                 Booking Details
                         </span>
-                          {% endif %}
+                          
                     </a>
                     </td>
+                    
                                 </tr>
                                 {% endfor %}
                                 {% endif %}

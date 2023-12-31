@@ -1,6 +1,6 @@
 {% extends 'common_page.html' %}
 
-{% block title %} {% if user == "staff" %} Display Staff {% else %} Display Patient {% endif %} {% endblock title %}
+{% block title %} My Booking {% endblock title %}
 
 {% block body_content %}
 
@@ -19,78 +19,77 @@
             <div class="card">
                 <div class="card-content">
                     <div class="flex items-center justify-between">
+                        <div class="control m-2 d-flex justify-content-center">
+                        <a href="{% url 'medical_report' user_id %}">
+
+                            <button type="submit" class=" btn btn-primary">
+                                Enter medical report
+                            </button>
+                           </a>
+                        </div>
                         <div class="widget-label">
                             <table class="table table-striped table-hover mx-auto px-auto">
                                 <thead bgcolor="#969cad">
-                                    <th>
-                                        {% if user == "staff" %} STAFF ID {% else %} PATIENT ID {% endif %}
-                                    </th>
-                                    <th> PICTURE </th> <th> USERNAME </th> <th> FULL NAME </th>
-                                    {% if user == "staff" %} <th> POSITION </th> <th> DEPARTMENT </th> {% endif %} <th> STATUS</th> <th> PROFILE</th> <th> MEDICAL HISTORY</th>
+                                  
+                                    <th> VISIT DATE </th> <th> SERVICE NAME </th> <th> DOCTOR </th>
+                                   <th> NEXT VISIT DATE </th> <th> NEXT VISIT TIME </th> <th> DESCRIPTION</th> <th> PATIENT STATUS</th> <th> DOCTOR REMARK</th>
                                 </thead>
-                                {% if all_user %}
+                                {% if medical_history %}
 
-                                {% for users in all_user %}
+                                {% for booking in medical_history %}
 
                                 <tr>
-                                    <td>
-                                        <span style="color: #969cad;" class="font-weight-bold">
-                                            TCH0{{users.user.id}}
-                                        </span>
-                                    </td>
+                                   
                                     <td>
                                         <span style="color: #0e399c;" class="font-weight-bold">
-                                            {% if users.profile_passport %}
-                                            <img src="{{users.profile_passport.url}}" alt="img" width="100px" height="100px" />
-                                            {% else %}
-                                            <i class="fas fa-user fa-lag fa-fw text-dark me-2"></i> 
-                                            {% endif %}
+                                            {{booking.date_created}}
                                         </span>
                                     </td>
                                     <td>
                                         <span style="color: #969cad;" class="font-weight-bold">
-                                           {{users.user.username}}
+                                           {{booking.service.service_options}}
                                         </span>
                                     </td>
                                     <td>
                                         <span style="color: #969cad;" class="font-weight-bold">
-                                           {{users.user.first_name}} {{users.user.last_name}}
+                                           {{booking.next_approved_doctor}} 
                                         </span>
                                     </td>
-                                    {% if user == "staff" %}
+                                    
                              <td>
                                 <span style="color: #969cad;" class="font-weight-bold">
-                                   {{users.position}}
+                                   {{booking.next_approved_date}}
                                 </span>
                               </td>
                         <td>
                         <span style="color: #969cad;" class="font-weight-bold">
-                          {{users.department}}
+                          {{booking.next_approved_time}}
                         </span>
                     </td>
-                    {% endif %}
+
 
                     <td>
                         <span style="color: #969cad;" class="font-weight-bold">
-                          {{users.status}}
+                          {{booking.description}}
                         </span>
                     </td>
                     
                     <td>
-                        <a href="{% url 'my_account' users.user_id %}">
-                        <span style="color: #0e399c;" class="font-weight-bold">
-                          Profile
-                        </span>
-                    </a>
+                     
+                        <span style="color: #969cad;" class="font-weight-bold">
+                            {{booking.patient_status}}
+                          </span>
+                          
+                    
                     </td>
                     <td>
-                        <a href="{% url 'medical_history' users.user_id %}">
-                        <span style="color: #0e399c;" class="font-weight-bold">
-                          Medical History
-                        </span>
-                    </a>
+                     
+                        <span style="color: #969cad;" class="font-weight-bold">
+                            {{booking.doctor_remark}}
+                          </span>
+                          
+                    
                     </td>
-                   
                                 </tr>
                                 {% endfor %}
                                 {% endif %}
