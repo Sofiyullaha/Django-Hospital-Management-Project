@@ -25,8 +25,9 @@ def bookingPayment(request):
 @login_required
 @transaction.atomic
 def successPayment(request, book_id):
+   reference = request.GET.get('reference')
    booking = BookingService.objects.get(booking_id = book_id)
-   payment = Payment_service(user_id=request.user.id, booking_id=book_id, amount=booking.price)
+   payment = Payment_service(user_id=request.user.id, booking_id=book_id, amount=booking.price, reference=reference)
    payment.save()
    
    payment = BookingService.objects.filter(booking_id=book_id).update(payment=True)

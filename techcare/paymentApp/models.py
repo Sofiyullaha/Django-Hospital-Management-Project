@@ -10,4 +10,4 @@ class Payment_service(models.Model):
     booking = models.ForeignKey(BookingService, null=False, on_delete=models.CASCADE, unique=False)
     amount = models.BigIntegerField(unique=False, null=False)
     date_of_payment = models.DateTimeField(auto_now_add=True, null=False)
-    paystack_detail = models.BigIntegerField(unique=True, null=False)
+    reference = models.CharField(null=False, max_length=50 )

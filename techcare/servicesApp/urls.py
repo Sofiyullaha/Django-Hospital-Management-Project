@@ -19,6 +19,5 @@ urlpatterns = [
     re_path(r'^medical_history/(?P<user>\d+)/', sw.medicalHistory, name="medical_history"),
     re_path(r'^medical_report/(?P<user>\d+)/', sw.medicalReport, name="medical_report"),
     re_path(r'^payment/', pw.bookingPayment, name="payment"),
-   
 
     ]
